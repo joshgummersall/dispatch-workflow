@@ -1,0 +1,24 @@
+name: Dispatch Workflow
+description: Dispatches a workflow, optionally in another repository
+
+branding:
+  icon: alert-circle
+  color: gray-dark
+
+inputs:
+  inputs:
+    description: Optional inputs to pass to the workflow, must be a JSON string
+  ref:
+    description: The git ref to use when triggering workflow, defaults to "main"
+  repo:
+    description: Repo owner and name, slash separated, only set if invoking a workflow in a different repo
+  token:
+    description: A personal access token with write access to the repo in question.
+    required: true
+  workflow:
+    description: The name or ID of the workflow to trigger and run. This is the name declared in the YAML file.
+    required: true
+
+runs:
+  using: node12
+  main: lib/index.js

@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/rest";
 import { Toolkit } from "actions-toolkit";
 
 type Inputs = {
+  encoded?: string;
   inputs?: string;
   ref?: string;
   repo?: string;
@@ -10,7 +11,15 @@ type Inputs = {
 };
 
 Toolkit.run<Inputs>(async (tools) => {
-  const { inputs: maybeInputString, ref: maybeRef, token } = tools.inputs;
+  const {
+    encoded: maybeEncoded,
+    inputs: maybeInputString,
+    ref: maybeRef,
+    token,
+  } = tools.inputs;
+
+  const encoded = maybeEncoded ? JSON.parse(maybeEncoded) : false;
+
   const workflowQuery = tools.inputs.workflow.trim();
 
   const ref = maybeRef?.trim() ?? "main";
@@ -23,6 +32,19 @@ Toolkit.run<Inputs>(async (tools) => {
   let inputs = {};
   if (maybeInputString) {
     inputs = JSON.parse(maybeInputString);
+
+    if (encoded) {
+      inputs = Object.entries(inputs).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]:
+            typeof value === "string"
+              ? Buffer.from(value, "base64").toString("utf8")
+              : value,
+        }),
+        {}
+      );
+    }
   }
 
   const github = new Octokit({

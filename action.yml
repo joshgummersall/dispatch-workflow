@@ -8,6 +8,8 @@ branding:
 inputs:
   inputs:
     description: Optional inputs to pass to the workflow, must be a JSON string
+  encoded:
+    description: Are JSON values base64 encoded
   ref:
     description: The git ref to use when triggering workflow, defaults to "main"
   repo:
